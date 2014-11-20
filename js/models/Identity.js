@@ -57,6 +57,7 @@ function Identity(opts) {
   this.version = opts.version || version;
 
   this.wallets = opts.wallets || {};
+  this.backupNeeded = opts.backupNeeded || false;
 };
 
 Identity.getStoragePrefix = function() {
@@ -83,7 +84,9 @@ Identity.prototype.getName = function() {
  * @return {undefined}
  */
 Identity.create = function(opts, cb) {
-  opts = _.extend({}, opts);
+  opts = _.extend({
+    backupNeeded: true
+  }, opts);
 
   var iden = new Identity(opts);
   iden.store(_.extend(opts, {
@@ -220,11 +223,12 @@ Identity.prototype.toObj = function() {
   return _.extend({
       walletIds: _.keys(this.wallets)
     },
-    _.pick(this, 'version', 'fullName', 'password', 'email'));
+    _.pick(this, 'version', 'fullName', 'password', 'email', 'backupNeeded'));
 };
 
 Identity.prototype.exportEncryptedWithWalletInfo = function(opts) {
   var crypto = opts.cryptoUtil || cryptoUtil;
+  this.backupNeeded = false;
   return crypto.encrypt(this.password, this.exportWithWalletInfo(opts));
 };
 
@@ -234,7 +238,7 @@ Identity.prototype.exportWithWalletInfo = function(opts) {
         return wallet.toObj();
       })
     },
-    _.pick(this, 'version', 'fullName', 'password', 'email')
+    _.pick(this, 'version', 'fullName', 'password', 'email', 'backupNeeded')
   );
 };
 
@@ -243,10 +247,9 @@ Identity.prototype.exportWithWalletInfo = function(opts) {
  * @param {Function} cb
  */
 Identity.prototype.store = function(opts, cb) {
-  log.debug('Storing profile');
-
   var self = this;
   opts = opts || {};
+  opts.backupNeeded = false;
 
   var storeFunction = opts.failIfExists ? self.storage.createItem : self.storage.setItem;
 
@@ -489,6 +492,7 @@ Identity.prototype.createWallet = function(opts, cb) {
 
   var self = this;
 
+
   var w = new walletClass(opts);
   this.addWallet(w);
   self.bindWallet(w);
@@ -496,8 +500,9 @@ Identity.prototype.createWallet = function(opts, cb) {
   self.storeWallet(w, function(err) {
     if (err) return cb(err);
 
+    self.backupNeeded = true;
     self.store({
-      noWallets: true
+      noWallets: true,
     }, function(err) {
       return cb(err, w);
     });
