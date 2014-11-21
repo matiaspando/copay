@@ -5,9 +5,6 @@
       <a class="text-gray" ng-click="refresh()" ng-if="!$root.updatingBalance">
         <i class="fi-refresh"></i>
       </a>
-      <span ng-if="$root.iden.backupNeeded">
-        BACKUP!
-      </span>
       <span ng-if="$root.updatingBalance">
         <i class="fi-bitcoin-circle icon-rotate spinner"></i>
       </span>
@@ -19,10 +16,13 @@
 
 <div class="menu" ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()"
   ng-click="hoverMenu = !hoverMenu">
-  <a class="dropdown ellipsis text-gray" ng-class="{'hover': hoverMenu}">
+  <a class="dropdown ellipsis text-gray pr" ng-class="{'hover': hoverMenu}">
     <div class="photo-container">
       <img gravatar-src="'{{username}}'" gravatar-size="35">
     </div>
+    <span class="need-backup" ng-if="$root.iden.backupNeeded">
+      <i class="fi-alert vm"></i> 
+    </span>
     <span class="m15t">{{username}} </span>
     <i class="icon-arrow-down size-16 vm"></i> 
   </a>
@@ -35,8 +35,12 @@
     <li><a class="text-gray size-16" href="#!/import" title="Import wallet">
       <i class="fi-download m10r"></i> {{'Import wallet'|translate}}</a></li>
     <li class="divider"></li>
-    <li><a class="text-gray size-16" href="#!/profile" title="Profile">
-      <i class="fi-torso m10r"></i> {{'Profile'|translate}}</a></li> 
+    <li>
+      <a class="text-gray size-16" href="#!/profile" title="Profile">
+        <i class="fi-torso m10r"></i> {{'Profile'|translate}} 
+        <span class="size-10 text-warning" ng-if="$root.iden.backupNeeded"> [ Needs Backup ]</span>
+      </a>
+    </li> 
     <li><a class="text-gray size-16" href="#!/" title="Close" ng-click="signout()">
       <i class="fi-power m10r"></i> {{'Close'|translate}}</a></li>
   </ul>
