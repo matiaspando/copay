@@ -111,9 +111,8 @@ Identity.open = function(opts, cb) {
   var storage = opts.storage || opts.pluginManager.get('DB');
   storage.setCredentials(opts.email, opts.password, opts);
   storage.getItem(Identity.getKeyForEmail(opts.email), function(err, data) {
-    if (err) {
-      return cb(err);
-    }
+    if (err) return cb(err);
+
     return Identity.createFromPartialJson(data, opts, cb);
   });
 };
@@ -229,9 +228,16 @@ Identity.prototype.toObj = function() {
 
 Identity.prototype.exportEncryptedWithWalletInfo = function(opts) {
   var crypto = opts.cryptoUtil || cryptoUtil;
-  this.backupNeeded = false;
+
   return crypto.encrypt(this.password, this.exportWithWalletInfo(opts));
 };
+
+Identity.prototype.setBackupDone = function() {
+  this.backupNeeded = false;
+  this.store({
+    noWallets: true
+  }, function() {});
+}
 
 Identity.prototype.exportWithWalletInfo = function(opts) {
   return _.extend({
@@ -250,12 +256,13 @@ Identity.prototype.exportWithWalletInfo = function(opts) {
 Identity.prototype.store = function(opts, cb) {
   var self = this;
   opts = opts || {};
-  opts.backupNeeded = false;
 
   var storeFunction = opts.failIfExists ? self.storage.createItem : self.storage.setItem;
 
   storeFunction.call(self.storage, this.getId(), this.toObj(), function(err) {
-    if (err) return cb(err);
+    if (err) {
+      return cb(err);
+    }
 
     if (opts.noWallets)
       return cb();

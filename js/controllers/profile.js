@@ -13,7 +13,7 @@ angular.module('copayApp.controllers').controller('ProfileController', function(
     $scope.backupProfilePlainText = backupService.profileEncrypted($rootScope.iden);
     $scope.hideViewProfileBackup = true;
   };
-  
+
   $scope.getWallets = function() {
     if (!$rootScope.iden) return;
     $scope.wallets = [];
@@ -26,7 +26,7 @@ angular.module('copayApp.controllers').controller('ProfileController', function(
       }, true);
     });
   };
-  
+
   $scope.deleteWallet = function(w) {
     if (!w) return;
     $scope.loading = w.id;

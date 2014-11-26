@@ -77,7 +77,7 @@ describe("Angular services", function() {
       a[Waddr] = 200;
       w.getBalance = sinon.stub().yields(null, 100000001, a, 90000002, 5);
 
-      var orig  =controllerUtils.isFocusedWallet;
+      var orig = controllerUtils.isFocusedWallet;
       controllerUtils.isFocusedWallet = sinon.stub().returns(true);
 
       //retuns values in DEFAULT UNIT(bits)
