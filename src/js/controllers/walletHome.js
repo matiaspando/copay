@@ -320,25 +320,20 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
 
   this.mustShowAlternative = function() {
-    console.log('----------------------mustShowAlternative');
     return $scope.showAlternative;
   };
 
   this.showAlternative = function() {
-    console.log('showAlternative.....................');
     $scope.showAlternative = true;
   };
 
   this.hideAlternative = function() {
-    console.log('hideAlternative.....................');
     $scope.showAlternative = false;
   };
-
 
   this.resetError = function() {
     this.error = this.success = null;
   };
-
 
   var hideMenuBar = lodash.debounce(function(hide) {
     if (hide) {
